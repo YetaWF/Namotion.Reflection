@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Reflection.Cecil.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Reflection.Benchmark", "Namotion.Reflection.Benchmark\Namotion.Reflection.Benchmark.csproj", "{D0AD78E3-3057-4DC8-87F9-F91B2766DDB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{89F2F1BC-6164-42BF-827C-33173A932022}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,9 +59,16 @@ Global
 		{D0AD78E3-3057-4DC8-87F9-F91B2766DDB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0AD78E3-3057-4DC8-87F9-F91B2766DDB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0AD78E3-3057-4DC8-87F9-F91B2766DDB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F2F1BC-6164-42BF-827C-33173A932022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89F2F1BC-6164-42BF-827C-33173A932022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89F2F1BC-6164-42BF-827C-33173A932022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89F2F1BC-6164-42BF-827C-33173A932022}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{89F2F1BC-6164-42BF-827C-33173A932022} = {F50FE573-405B-46A4-B8BE-3224547FF5AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22BCE439-38C4-45F8-9950-65C285882E67}

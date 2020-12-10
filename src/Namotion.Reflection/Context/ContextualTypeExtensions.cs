@@ -242,7 +242,11 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="CachedType"/>.</returns>
         public static ContextualType ToContextualType(this Type type)
         {
-            var key = "Type:Context:" + type.FullName;
+            //if (type.FullName == null)
+            //    type = type;
+
+
+            var key = "Type:Context:" + (type.FullName ?? $"{type.Namespace}.{type.Name}");
             lock (Lock)
             {
                 if (!Cache.ContainsKey(key))
