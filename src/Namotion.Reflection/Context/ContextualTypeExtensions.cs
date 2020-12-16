@@ -78,6 +78,17 @@ namespace Namotion.Reflection
         }
 
         /// <summary>
+        /// Gets an array of <see cref="ContextualGenericInfo"/> for the given <see cref="MethodBase"/> instance.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <returns>The runtime properties.</returns>
+        public static ContextualGenericInfo[] GetContextualGenerics(this MethodBase method) {
+            return method.GetGenericArguments()
+                .Select(g => g.ToContextualGeneric(method))
+                .ToArray();
+        }
+
+        /// <summary>
         /// Gets an array of <see cref="ContextualPropertyInfo"/> for the given <see cref="Type"/> instance.
         /// </summary>
         /// <param name="type">The type.</param>
@@ -154,6 +165,17 @@ namespace Namotion.Reflection
             }
 
             return (ContextualParameterInfo)Cache[key];
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ContextualGenericInfo"/> for the given <see cref="ParameterInfo"/> instance.
+        /// </summary>
+        /// <param name="typeInfo">The generic type.</param>
+        /// <param name="method">The method with generic types</param>
+        /// <returns>The <see cref="ContextualGenericInfo"/>.</returns>
+        public static ContextualGenericInfo ToContextualGeneric(this Type typeInfo, MethodBase method) {
+            var index = 0;
+            return new ContextualGenericInfo(typeInfo, method, ref index);
         }
 
         /// <summary>
@@ -242,9 +264,8 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="CachedType"/>.</returns>
         public static ContextualType ToContextualType(this Type type)
         {
-            //if (type.TypeKey() == null)
-            //    type = type;
-
+            if (type.FullName == null) // Generic types are not cached
+                return ContextualType.ForType(type, new Attribute[0]);
 
             var key = "Type:Context:" + type.TypeKey();
             lock (Lock)
@@ -265,6 +286,9 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="CachedType"/>.</returns>
         public static CachedType ToCachedType(this Type type)
         {
+            if (type.FullName == null) // Generic types are not cached
+                return new CachedType(type);
+
             var key = "Type:" + type.TypeKey();
             if (!Cache.ContainsKey(key))
             {

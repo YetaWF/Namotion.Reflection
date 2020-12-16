@@ -387,28 +387,56 @@ namespace Namotion.Reflection.Tests
             Assert.Equal(Nullability.Nullable, paramContexts[5].Nullability);
             Assert.Equal(Nullability.Nullable, paramContexts[6].Nullability);
         }
-        
+
+        public partial class Generics<T1, T2, T3, T4> where T1 : class where T2 : struct where T3 : new()   {
+            public T1? T1Method() { return default; }
+            public T2 T2Method() { return default; }
+            public T3 T3Method() { return new T3(); }
+            public T4 T4Method() { return default; }
+            public T1? GenericMethodNullable<SOME1, SOME2, SOME3, SOME4>() where SOME1 : notnull where SOME2 : class { return default; }
+            public T3 GenericMethodNotNullable<SOME1, SOME2, SOME3, SOME4>() where SOME3 : notnull where SOME4 : class { return new T3(); }
+        }
+
         [Fact]
-        public void ConstructorParameters() {
+        public void GenericTypes() {
 
-            var constructors = typeof(FullAssemblyTestAction).GetConstructors();
+            var generics = typeof(Generics<Overloads, DateTime, Overloads, int?>);
+            CachedType[] ct = generics.ToCachedType().GenericArguments;
+            var t1Method = generics.GetMethod("T1Method")!;
+            var t2Method = generics.GetMethod("T2Method")!;
+            var t3Method = generics.GetMethod("T3Method")!;
+            var t4Method = generics.GetMethod("T4Method")!;
+            var genericMethodNullable = generics.GetMethod("GenericMethodNullable")!;
+            var genericMethodNotNullable = generics.GetMethod("GenericMethodNotNullable")!;
 
-            Assert.Single(constructors);
-            var constructor = constructors[0];
+            Assert.Equal(Nullability.Nullable, t1Method.ReturnParameter.ToContextualParameter().Nullability);
+            Assert.Equal(Nullability.NotNullable, t2Method.ReturnParameter.ToContextualParameter().Nullability);
+            Assert.Equal(Nullability.NotNullable, t3Method.ReturnParameter.ToContextualParameter().Nullability);
+            Assert.Equal(Nullability.Nullable, t4Method.ReturnParameter.ToContextualParameter().Nullability);
 
-            // verify: public FullAssemblyTestAction(string p1, string? p2, int p3, int? p4, Action p5, Action? p6, Tuple<string, string?, int, int?, Action, Action?>? t) { }
-            var paramInfos = constructor.GetParameters();
-            Assert.Equal(7, paramInfos.Length);
+            Assert.Equal(Nullability.Nullable, genericMethodNullable.ReturnParameter.ToContextualParameter().Nullability);
+            var genArgs = genericMethodNullable.GetContextualGenerics();
+            Assert.Equal(4, genArgs.Length);
+            ContextualType some1 = genArgs[0];
+            Assert.Equal(Nullability.NotNullable, some1.Nullability);
+            ContextualType some2 = genArgs[1];
+            Assert.Equal(Nullability.NotNullable, some2.Nullability);
+            ContextualType some3 = genArgs[2];
+            Assert.Equal(Nullability.Nullable, some3.Nullability);
+            ContextualType some4 = genArgs[3];
+            Assert.Equal(Nullability.Nullable, some4.Nullability);
 
-            var paramContexts = paramInfos.Select(p => p.ToContextualParameter()).ToArray();
-
-            Assert.Equal(Nullability.NotNullable, paramContexts[0].Nullability);
-            Assert.Equal(Nullability.Nullable, paramContexts[1].Nullability);
-            Assert.Equal(Nullability.NotNullable, paramContexts[2].Nullability);
-            Assert.Equal(Nullability.Nullable, paramContexts[3].Nullability);
-            Assert.Equal(Nullability.NotNullable, paramContexts[4].Nullability);
-            Assert.Equal(Nullability.Nullable, paramContexts[5].Nullability);
-            Assert.Equal(Nullability.Nullable, paramContexts[6].Nullability);
+            Assert.Equal(Nullability.NotNullable, genericMethodNotNullable.ReturnParameter.ToContextualParameter().Nullability);
+            genArgs = genericMethodNotNullable.GetContextualGenerics();
+            Assert.Equal(4, genArgs.Length);
+            some1 = genArgs[0];
+            Assert.Equal(Nullability.Nullable, some1.Nullability);
+            some2 = genArgs[1];
+            Assert.Equal(Nullability.Nullable, some2.Nullability);
+            some3 = genArgs[2];
+            Assert.Equal(Nullability.NotNullable, some3.Nullability);
+            some4 = genArgs[3];
+            Assert.Equal(Nullability.NotNullable, some4.Nullability);
         }
     }
 }
