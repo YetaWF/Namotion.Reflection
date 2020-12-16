@@ -170,5 +170,15 @@ namespace Namotion.Reflection
         {
             return (type.IsNullableType ? "Nullable" : "") + actual;
         }
+
+        /// <summary>
+        /// Create a unique name for a Type. FullName may not be available for generic types.
+        /// </summary>
+        /// <param name="type">The type for which a unique name is returned.</param>
+        /// <returns>Returns a unique string describing the given type.</returns>
+        /// <remarks>This is used to create proper caching keys based on the type information. For generic types FullName is null so we synthesize a name using ToString(). This is probably not foolproof either.</remarks>
+        internal static string TypeKey(this Type type) {
+            return type.FullName ?? type.ToString();
+        }
     }
 }

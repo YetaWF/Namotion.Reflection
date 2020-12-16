@@ -28,7 +28,7 @@ namespace Namotion.Reflection
         /// <returns></returns>
         public static IEnumerable<ContextualMemberInfo> GetContextualPropertiesAndFields(this Type type)
         {
-            var key = "PropertiesAndFields:" + type.FullName;
+            var key = "PropertiesAndFields:" + type.TypeKey();
 
             if (!Cache.ContainsKey(key))
             {
@@ -54,7 +54,7 @@ namespace Namotion.Reflection
         /// <returns>The runtime properties.</returns>
         public static ContextualParameterInfo[] GetContextualParameters(this MethodBase method)
         {
-            var key = "Parameters:" + method.Name + ":" + method.DeclaringType.FullName + ":" + EnumeratedParameters(method.GetParameters());
+            var key = "Parameters:" + method.Name + ":" + method.DeclaringType.TypeKey() + ":" + EnumeratedParameters(method.GetParameters());
 
             if (!Cache.ContainsKey(key))
             {
@@ -74,7 +74,7 @@ namespace Namotion.Reflection
 
         private static string EnumeratedParameters(ParameterInfo[] parameters)
         {
-            return string.Join("-", parameters.Select(p => p.ParameterType.FullName));
+            return string.Join("-", parameters.Select(p => p.ParameterType.TypeKey()));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Namotion.Reflection
         /// <returns>The runtime properties.</returns>
         public static ContextualPropertyInfo[] GetContextualProperties(this Type type)
         {
-            var key = "Properties:" + type.FullName;
+            var key = "Properties:" + type.TypeKey();
 
             if (!Cache.ContainsKey(key))
             {
@@ -112,7 +112,7 @@ namespace Namotion.Reflection
         /// <returns>The runtime fields.</returns>
         public static ContextualFieldInfo[] GetContextualFields(this Type type)
         {
-            var key = "Fields:" + type.FullName;
+            var key = "Fields:" + type.TypeKey();
             if (!Cache.ContainsKey(key))
             {
                 lock (Lock)
@@ -139,7 +139,7 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="ContextualParameterInfo"/>.</returns>
         public static ContextualParameterInfo ToContextualParameter(this ParameterInfo parameterInfo)
         {
-            var key = "Parameter:" + parameterInfo.Name + ":" + parameterInfo.ParameterType.FullName + ":" + parameterInfo.Member.Name + ":" + parameterInfo.Member.DeclaringType.FullName;
+            var key = "Parameter:" + parameterInfo.Name + ":" + parameterInfo.ParameterType.TypeKey() + ":" + parameterInfo.Member.Name + ":" + parameterInfo.Member.DeclaringType.TypeKey();
             if (!Cache.ContainsKey(key))
             {
                 lock (Lock)
@@ -163,7 +163,7 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="ContextualPropertyInfo"/>.</returns>
         public static ContextualPropertyInfo ToContextualProperty(this PropertyInfo propertyInfo)
         {
-            var key = "Property:" + propertyInfo.Name + ":" + propertyInfo.DeclaringType.FullName;
+            var key = "Property:" + propertyInfo.Name + ":" + propertyInfo.DeclaringType.TypeKey();
             if (!Cache.ContainsKey(key))
             {
                 lock (Lock)
@@ -188,7 +188,7 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="ContextualFieldInfo"/>.</returns>
         public static ContextualFieldInfo ToContextualField(this FieldInfo fieldInfo)
         {
-            var key = "Field:" + fieldInfo.Name + ":" + fieldInfo.DeclaringType.FullName;
+            var key = "Field:" + fieldInfo.Name + ":" + fieldInfo.DeclaringType.TypeKey();
             if (!Cache.ContainsKey(key))
             {
                 lock (Lock)
@@ -242,7 +242,7 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="CachedType"/>.</returns>
         public static ContextualType ToContextualType(this Type type)
         {
-            var key = "Type:Context:" + type.FullName;
+            var key = "Type:Context:" + type.TypeKey();
             lock (Lock)
             {
                 if (!Cache.ContainsKey(key))
@@ -261,7 +261,7 @@ namespace Namotion.Reflection
         /// <returns>The <see cref="CachedType"/>.</returns>
         public static CachedType ToCachedType(this Type type)
         {
-            var key = "Type:" + type.FullName;
+            var key = "Type:" + type.TypeKey();
             if (!Cache.ContainsKey(key))
             {
                 lock (Lock)

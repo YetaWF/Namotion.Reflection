@@ -1,5 +1,6 @@
 using Namotion.Reflection.Tests.FullAssembly;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -333,14 +334,16 @@ namespace Namotion.Reflection.Tests
                 return null;
             }
             public Overloads Test1(double? j) {
-                return null;
+                return new Overloads();
             }
             public string? Test2(int i) {
                 return null;
             }
             public Overloads Test2(double? j) {
-                return null;
+                return new Overloads();
             }
+            public void Test3(IDictionary<string, string>? j) { }
+            public void Test3(IEnumerable<string> j) { }
         }
 
         [Fact]
@@ -352,6 +355,8 @@ namespace Namotion.Reflection.Tests
             var methodTest1b = overloads.GetMethod("Test1", new[] { typeof(double?) });
             var methodTest2a = overloads.GetMethod("Test2", new[] { typeof(int) });
             var methodTest2b = overloads.GetMethod("Test2", new[] { typeof(double?) });
+            var methodTest3a = overloads.GetMethod("Test3", new[] { typeof(IDictionary<string, string>) });
+            var methodTest3b = overloads.GetMethod("Test3", new[] { typeof(IEnumerable<string>) });
 
             // Act & Assert
             Assert.Equal(Nullability.Nullable, methodTest1a.ReturnParameter.ToContextualParameter().Nullability);
@@ -364,14 +369,22 @@ namespace Namotion.Reflection.Tests
             Assert.Equal(Nullability.NotNullable, methodTest1a.GetContextualParameters()[0].Nullability);
             Assert.Equal(Nullability.Nullable, methodTest1b.GetContextualParameters()[0].Nullability);
 
+            Assert.Equal(Nullability.Nullable, methodTest3a.GetContextualParameters()[0].Nullability);
+            Assert.Equal(Nullability.NotNullable, methodTest3b.GetContextualParameters()[0].Nullability);
         }
-        
+
+        public class Constructors<TKey, TValue> {
+            public Constructors(IDictionary<TKey, TValue>? dictionary) { }
+            public Constructors(IEnumerable<TValue> list) { }
+        }
+
         [Fact]
         public void ConstructorParameters() {
 
             var constructors = typeof(FullAssemblyTestAction).GetConstructors();
 
             Assert.Single(constructors);
+
             var constructor = constructors[0];
 
             // verify: public FullAssemblyTestAction(string p1, string? p2, int p3, int? p4, Action p5, Action? p6, Tuple<string, string?, int, int?, Action, Action?>? t) { }
@@ -387,6 +400,20 @@ namespace Namotion.Reflection.Tests
             Assert.Equal(Nullability.NotNullable, paramContexts[4].Nullability);
             Assert.Equal(Nullability.Nullable, paramContexts[5].Nullability);
             Assert.Equal(Nullability.Nullable, paramContexts[6].Nullability);
+
+
+            constructors = typeof(Constructors<string, string>).GetConstructors();
+            Assert.Equal(2, constructors.Length);
+
+            constructor = constructors[0];
+            var parms = constructor.GetContextualParameters();
+            Assert.Single(parms);
+            Assert.Equal(Nullability.Nullable, parms[0].Nullability);
+
+            constructor = constructors[1];
+            parms = constructor.GetContextualParameters();
+            Assert.Single(parms);
+            Assert.Equal(Nullability.NotNullable, parms[0].Nullability);
         }
     }
 }
